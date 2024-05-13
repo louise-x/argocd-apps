@@ -1,0 +1,48 @@
+{{- range $key,$val := .Values.applications -}}
+{{- if $val.enabled -}}
+{{ printf "\n" }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $key }}
+  namespace: argo
+spec:
+  destination:
+    namespace: {{ $val.namespace | default $key }}
+    server: 'https://kubernetes.default.svc'
+  project: {{ $val.project | default $.Values.default.app.project }}
+  sources:
+{{- if $val.source.helm }}
+  - repoURL: {{ $val.source.helm.repoURL | default $.Values.default.helm.repoURL }}
+    targetRevision: {{ $val.source.helm.targetRevision | default $.Values.default.helm.targetRevision }}
+    path: {{ $val.source.helm.chart }}
+    helm:
+      valueFiles:
+      - "$values/{{ $val.source.helm.valuesPath }}"
+  - repoURL: {{ $val.source.repoURL }}
+    targetRevision: {{ $val.source.targetRevision | default $.Values.default.app.source.targetRevision }}
+    ref: values
+{{- else }}
+  - repoURL: {{$val.source.repoURL}}
+    targetRevision: {{ $val.source.targetRevision | default $.Values.default.app.source.targetRevision }}
+    path: {{ $val.source.path | default $.Values.default.app.source.path }}
+{{- end }}
+  syncPolicy:
+    automated:
+      {{- if $val.customizedSync }}
+        {{- if $val.customizedSync.syncAutomated}}
+        {{- $val.customizedSync.syncAutomated | nindent 6 }}
+        {{- else }}
+        null
+        {{- end}}
+      {{- else }}
+        prune: true
+        selfHeal: true
+      {{- end }}
+    syncOptions:
+    {{- if $val.syncOptions }}
+      {{- $val.syncOptions | nindent 6 }}
+    {{- end }}
+{{- end -}}
+{{- end -}}

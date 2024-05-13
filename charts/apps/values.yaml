@@ -1,0 +1,14 @@
+default:
+  app:
+    project: development
+    source:
+      targetRevision: HEAD
+
+applications:
+  demo-a:
+    namespace: demo-a
+    source:
+      repoURL: 'https://github.com/louise-x/simple-k8s-demo.git'
+      targetRevision: main
+      path: proj-a/overlays/dev
+    enabled: true
