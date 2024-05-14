@@ -24,7 +24,7 @@ spec:
     targetRevision: {{ $val.source.targetRevision | default $.Values.default.app.source.targetRevision }}
     ref: values
 {{- else }}
-  - repoURL: {{$val.source.repoURL}}
+    repoURL: {{$val.source.repoURL}}
     targetRevision: {{ $val.source.targetRevision | default $.Values.default.app.source.targetRevision }}
     path: {{ $val.source.path | default $.Values.default.app.source.path }}
 {{- end }}
