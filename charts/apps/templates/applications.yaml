@@ -7,6 +7,9 @@ kind: Application
 metadata:
   name: {{ $key }}
   namespace: argo
+metadata:
+  annotations:
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: e-chef-pipeline
 spec:
   destination:
     namespace: {{ $val.namespace | default $key }}
